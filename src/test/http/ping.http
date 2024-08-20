@@ -1,0 +1,2 @@
+# 이는 유료 버전만 가능한 기능임
+GET http://localhost:8080/api/ping
