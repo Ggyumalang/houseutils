@@ -1,11 +1,19 @@
 package com.zerobase.houseutils.policy;
 
+import com.zerobase.houseutils.exception.ErrorCode;
+import com.zerobase.houseutils.exception.HouseUtilsException;
+
+import java.util.List;
+
 public interface BrokeragePolicy {
 
-    BrokerageRule createBrokerageRule(Long price);
+    List<BrokerageRule> getRules();
 
     default Long calculate(Long price) {
-        BrokerageRule rule = createBrokerageRule(price);
-        return rule.calculateMaxBrokerage(price);
+        BrokerageRule brokerageRule = getRules().stream()
+                .filter(rule -> price < rule.getLessThan())
+                .findFirst()
+                .orElseThrow(() -> new HouseUtilsException(ErrorCode.INTERNAL_ERROR));
+        return brokerageRule.calculateMaxBrokerage(price);
     }
 }
